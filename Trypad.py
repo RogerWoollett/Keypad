@@ -5,7 +5,11 @@
 # put this file (Trypad.py) and Keypad.py in the same directory
 # and run with "python3 Trypad.py" 
 
-import tkinter as tk
+from sys import version_info
+if version_info[0] < 3:
+	import Tkinter as tk
+else:
+	import tkinter as tk
 
 from Keypad import Keypad
 

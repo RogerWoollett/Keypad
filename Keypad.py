@@ -2,9 +2,14 @@
 # written by Roger Woollett
 
 # A simple dialog keypad
-
-import tkinter as tk
-import tkinter.font as tkf
+# make work with python 2 or 3
+from sys import version_info
+if version_info[0] < 3:
+	import Tkinter as tk
+	import tkFont as tkf
+else:
+	import tkinter as tk
+	import tkinter.font as tkf
 
 class Key(tk.Label):
 	# class for a key
