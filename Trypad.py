@@ -18,13 +18,18 @@ class App(tk.Tk):
 
 		self.value = 0
 		# Keypad will show when button is pressed
-		tk.Button(self,text = "Pad",command = self.on_pad).pack()
+		tk.Button(self,text = "Show keypad",command = self.on_pad).pack()
 		
 		self.mainloop()
 
 	def on_pad(self):
 		reply = [self.value,False]
-		self.wait_window(Keypad(self,"My data",reply))
+		# default for size is 12
+		# default for sign is True
+		# default for decimal is True
+		#self.wait_window(Keypad(self,"My data",reply))
+		self.wait_window(Keypad(self,"My data",reply,size = 20,sign = False,decimal = False))
+		
 		if reply[1]:
 			# user pressed Return
 			self.value = reply[0]
