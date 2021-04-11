@@ -2,20 +2,32 @@
 # written by Roger Woollett
 
 # A simple dialog keypad
-# make work with python 2 or 3
-from sys import version_info
-if version_info[0] < 3:
-	import Tkinter as tk
-	import tkFont as tkf
-else:
-	import tkinter as tk
-	import tkinter.font as tkf
 
+import tkinter as tk
+import tkinter.font as tkf
+
+class Keyx(tk.Button):
+	# class for a key based on tk.Button rather than tk.Label
+	# This works but the key is bigger in relation to the text
+	# I prefer the Label version
+	def __init__(self,master,callback,value = None,*args,**kwargs):
+		tk.Button.__init__(self,master,takefocus = True,bd = 5
+						 ,command = self.on_click,relief = tk.RAISED,*args,**kwargs)
+        
+		self.value = value
+		self.callback = callback
+		
+	def on_click(self):
+		if self.value == None:
+			self.callback()
+		else:
+			self.callback(self.value)
+		
 class Key(tk.Label):
 	# class for a key
-	def __init__(self,master,text,value,callback,font):
-		tk.Label.__init__(self,master,text = text,takefocus = True
-						 ,bd = 5,relief = tk.RAISED,font = font)
+	def __init__(self,master,callback,value = None,*args,**kwargs):
+		tk.Label.__init__(self,master,takefocus = True,bd = 5
+						 ,relief = tk.RAISED,*args,**kwargs)
         
 		self.value = value
 		self.callback = callback
@@ -24,13 +36,18 @@ class Key(tk.Label):
 		self.bind("<ButtonRelease-1>",self.on_left)
 		    
 	def on_left(self,x):
+		self.configure(relief = tk.RAISED)		
 		# left mouse button released over key
-		self.configure(relief = tk.RAISED)
-		self.callback(self.value)
-				
+		if self.cget("state") == tk.NORMAL:
+			if self.value == None:
+				self.callback()
+			else:
+				self.callback(self.value)
+						
 	def on_over(self,x):
 		# left button pressed over key
-		self.configure(relief = tk.SUNKEN)		
+		if self.cget("state") == tk.NORMAL:
+			self.configure(relief = tk.SUNKEN)		
 		
 class Keypad(tk.Toplevel):
 	# Key pad class should be called using wait_window
@@ -86,37 +103,40 @@ class Keypad(tk.Toplevel):
 		
 		row += 1
 		# This will display value
-		tk.Label(self,textvariable = self.valuetext,font = keyfont).grid(column = 0,row = row,columnspan = 3,sticky = tk.W)
+		tk.Label(self,textvariable = self.valuetext,font = keyfont)\
+				.grid(column = 0,row = row,columnspan = 3,sticky = tk.W)
 		     
 		row += 1
 		# lay out the key buttons
-		Key(self,"  1  ","1",self.on_digit,keyfont).grid(column = 0,row = row)
-		Key(self,"  2  ","2",self.on_digit,keyfont).grid(column = 1,row = row)
-		Key(self,"  3  ","3",self.on_digit,keyfont).grid(column = 2,row = row)
+		Key(self,text = "  1  ",value = "1",callback = self.on_digit,font =	keyfont).grid(column = 0,row = row)
+		Key(self,text = "  2  ",value = "2",callback = self.on_digit,font = keyfont).grid(column = 1,row = row)
+		Key(self,text = "  3  ",value ="3",callback = self.on_digit,font = keyfont).grid(column = 2,row = row)
 
 		row += 1
-		Key(self,"  4  ","4",self.on_digit,keyfont).grid(column = 0,row = row)
-		Key(self,"  5  ","5",self.on_digit,keyfont).grid(column = 1,row = row)
-		Key(self,"  6  ","6",self.on_digit,keyfont).grid(column = 2,row = row)
+		Key(self,text = "  4  ",value ="4",callback = self.on_digit,font = keyfont).grid(column = 0,row = row)
+		Key(self,text = "  5  ",value ="5",callback = self.on_digit,font = keyfont).grid(column = 1,row = row)
+		Key(self,text = "  6  ",value ="6",callback = self.on_digit,font = keyfont).grid(column = 2,row = row)
 
 		row += 1		
-		Key(self,"  7  ","7",self.on_digit,keyfont).grid(column = 0,row = row)
-		Key(self,"  8  ","8",self.on_digit,keyfont).grid(column = 1,row = row)
-		Key(self,"  9  ","9",self.on_digit,keyfont).grid(column = 2,row = row)
+		Key(self,text = "  7  ",value ="7",callback = self.on_digit,font = keyfont).grid(column = 0,row = row)
+		Key(self,text = "  8  ",value ="8",callback = self.on_digit,font = keyfont).grid(column = 1,row = row)
+		Key(self,text = "  9  ",value ="9",callback = self.on_digit,font = keyfont).grid(column = 2,row = row)
 
 		row += 1
 		if sign:
-			Key(self," +- ",0,self.on_sign,keyfont).grid(column = 0,row = row)
-		Key(self,"  0  ","0",self.on_digit,keyfont).grid(column = 1,row = row)			
+			Key(self,text = " +- ",value =0,callback = self.on_sign,font = keyfont).grid(column = 0,row = row)
+		Key(self,text = "  0  ",value = "0",callback =  self.on_digit,font = keyfont).grid(column = 1,row = row)			
 		if decimal:
-			Key(self,"  .   ",0,self.on_point,keyfont).grid(column = 2,row = row)
+			Key(self,text = "  .   ",value =0,callback = self.on_point,font = keyfont).grid(column = 2,row = row)
 
 		row += 1		
-		Key(self," <-  ",0,self.on_bksp,keyfont).grid(column = 0,row = row)
-		Key(self," Cancel  ",1,self.on_exit,keyfont).grid(column = 1,row = row,columnspan = 2)
+		Key(self,text = " <-  ",value =0,callback = self.on_bksp,font = keyfont).grid(column = 0,row = row)
+		Key(self,text = " Cancel  ",value =1,callback = self.on_exit,font = keyfont)\
+			.grid(column = 1,row = row,columnspan = 2,sticky = tk.E)
 
 		row += 1		
-		Key(self,"Return",0,self.on_exit,keyfont).grid(column = 0,row = row,columnspan = 3)
+		Key(self,text = "Return",value = 0,callback = self.on_exit,font = keyfont)\
+			.grid(column = 0,row = row,columnspan = 3)
 		       
 	def on_digit(self,value):
 		# process a digit button
