@@ -3,8 +3,13 @@
 
 # A simple dialog keypad
 
-import tkinter as tk
-import tkinter.font as tkf
+from sys import version_info
+if version_info[0] < 3:
+	import Tkinter as tk
+	import tkFont as tkf
+else:
+	import tkinter as tk
+	import tkinter.font as tkf
 
 class Keyx(tk.Button):
 	# class for a key based on tk.Button rather than tk.Label
